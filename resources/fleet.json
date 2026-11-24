@@ -1,0 +1,28 @@
+[
+  {
+    "slug": "voyager",
+    "name": "Voyager",
+    "type": "probe",
+    "fuel": 60
+  },
+  {
+    "slug": "pioneer",
+    "name": "Pioneer",
+    "type": "probe",
+    "fuel": 5
+  },
+  {
+    "slug": "odyssey",
+    "name": "Odyssey",
+    "type": "crewed",
+    "fuel": 60,
+    "cargo_capacity": 20
+  },
+  {
+    "slug": "atlas",
+    "name": "Atlas",
+    "type": "cargo",
+    "fuel": 60,
+    "cargo_capacity": 500
+  }
+]

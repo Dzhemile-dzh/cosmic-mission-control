@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Cosmic\Model;
 
+use Cosmic\Exception\InsufficientFuelException;
 use InvalidArgumentException;
 use Override;
 use Stringable;
@@ -62,6 +63,30 @@ abstract class AbstractSpacecraft implements Stringable
     public function canReach(Planet $planet): bool
     {
         return $this->rangeInMillionKm() >= $planet->distanceInMillionKm();
+    }
+
+    /**
+     * Fuel comes in whole units, so a partly used unit counts as a full one.
+     */
+    public function fuelNeededFor(Planet $planet): int
+    {
+        return (int) ceil($planet->distanceInMillionKm() / $this->millionKmPerFuelUnit());
+    }
+
+    /**
+     * @throws InsufficientFuelException when asked to burn more than is in the tank
+     */
+    public function burnFuel(int $amount): void
+    {
+        if ($amount < 0) {
+            throw new InvalidArgumentException('Cannot burn a negative amount of fuel.');
+        }
+
+        if ($amount > $this->fuel) {
+            throw InsufficientFuelException::forBurn($this->name, $amount, $this->fuel);
+        }
+
+        $this->fuel -= $amount;
     }
 
     #[Override]
