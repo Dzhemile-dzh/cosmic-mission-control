@@ -17,9 +17,4 @@ trait CarriesCargoTrait
             $this->cargoCapacityInTons = $value;
         }
     }
-
-    public function canCarry(int $tons): bool
-    {
-        return $tons >= 0 && $tons <= $this->cargoCapacityInTons;
-    }
 }

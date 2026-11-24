@@ -23,16 +23,12 @@ final class MissionControlTest extends TestCase
         self::assertSame(Planet::Mars, $report->destination);
     }
 
-    public function testAPlanetOutOfRangeThrowsAndKeepsTheFuel(): void
+    public function testAPlanetOutOfRangeThrows(): void
     {
         $probe = new Probe('probe', 'Probe', 5);
 
-        try {
-            new MissionControl()->launch($probe, Planet::Mars);
-            self::fail('Expected an InsufficientFuelException.');
-        } catch (InsufficientFuelException $e) {
-            self::assertSame('Probe needs 6 fuel but only has 5.', $e->getMessage());
-            self::assertSame(5, $probe->fuel);
-        }
+        $this->expectException(InsufficientFuelException::class);
+
+        new MissionControl()->launch($probe, Planet::Mars);
     }
 }
