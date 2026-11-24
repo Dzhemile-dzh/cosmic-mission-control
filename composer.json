@@ -1,0 +1,25 @@
+{
+    "name": "dahmed/cosmic-mission-control",
+    "description": "A small command-line mission control for a cosmic fleet, showcasing modern PHP (8.0-8.4).",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": "^8.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cosmic\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cosmic\\Tests\\": "tests/"
+        }
+    },
+    "bin": [
+        "bin/cosmic"
+    ],
+    "config": {
+        "sort-packages": true
+    }
+}
