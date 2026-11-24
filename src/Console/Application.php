@@ -12,8 +12,19 @@ final readonly class Application
 
     private const array HELP_FLAGS = ['help', '--help', '-h'];
 
-    public function __construct(private Output $output)
+    /**
+     * @var array<string, CommandInterface> indexed by command name
+     */
+    private array $commands;
+
+    public function __construct(private Output $output, CommandInterface ...$commands)
     {
+        $indexed = [];
+        foreach ($commands as $command) {
+            $indexed[$command->name()] = $command;
+        }
+
+        $this->commands = $indexed;
     }
 
     /**
@@ -23,18 +34,24 @@ final readonly class Application
      */
     public function run(array $argv): int
     {
-        $command = $argv[1] ?? null;
+        $name = $argv[1] ?? null;
 
-        if ($command === null || in_array($command, self::HELP_FLAGS, true)) {
+        if ($name === null || in_array($name, self::HELP_FLAGS, true)) {
             $this->printUsage();
 
             return self::EXIT_OK;
         }
 
-        $this->output->error(sprintf('Unknown command "%s".', $command));
-        $this->output->error('Run "php bin/cosmic help" to see what is available.');
+        $command = $this->commands[$name] ?? null;
 
-        return self::EXIT_USAGE;
+        if ($command === null) {
+            $this->output->error(sprintf('Unknown command "%s".', $name));
+            $this->output->error('Run "php bin/cosmic help" to see what is available.');
+
+            return self::EXIT_USAGE;
+        }
+
+        return $command->run(array_slice($argv, 2), $this->output);
     }
 
     private function printUsage(): void
@@ -44,6 +61,10 @@ final readonly class Application
         $this->output->line('Usage:');
         $this->output->line('  php bin/cosmic <command> [arguments]');
         $this->output->line();
-        $this->output->line('No commands are available yet.');
+        $this->output->line('Commands:');
+
+        foreach ($this->commands as $command) {
+            $this->output->line(sprintf('  %-30s %s', $command->usage(), $command->description()));
+        }
     }
 }

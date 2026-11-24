@@ -3,9 +3,10 @@
 
 declare(strict_types=1);
 
-use Cosmic\Console\Application;
-use Cosmic\Console\Output;
+use Cosmic\Service\Container;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 
-exit(new Application(new Output())->run($argv));
+$container = new Container(fleetFile: dirname(__DIR__).'/resources/fleet.json');
+
+exit($container->getApplication()->run($argv));
