@@ -4,17 +4,10 @@ declare(strict_types=1);
 
 namespace Cosmic\Exception;
 
-use Cosmic\Model\Planet;
-use InvalidArgumentException;
-
-final class UnknownPlanetException extends InvalidArgumentException implements CosmicExceptionInterface
+final class UnknownPlanetException extends CosmicException
 {
-    public static function forName(string $name): self
+    public function __construct(string $name)
     {
-        return new self(sprintf(
-            'Unknown destination "%s". Choose one of: %s.',
-            $name,
-            implode(', ', array_column(Planet::cases(), 'value'))
-        ));
+        parent::__construct(sprintf('Unknown destination "%s". Run "php bin/cosmic planets" to see the choices.', $name));
     }
 }

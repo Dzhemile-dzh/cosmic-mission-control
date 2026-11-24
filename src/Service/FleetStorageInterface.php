@@ -4,21 +4,18 @@ declare(strict_types=1);
 
 namespace Cosmic\Service;
 
-use Cosmic\Exception\InvalidFleetDataException;
-use Cosmic\Model\SpacecraftData;
+use Cosmic\Exception\UnknownSpacecraftException;
+use Cosmic\Model\AbstractSpacecraft;
 
 interface FleetStorageInterface
 {
     /**
-     * @return list<SpacecraftData>
-     *
-     * @throws InvalidFleetDataException
+     * @return list<AbstractSpacecraft>
      */
-    public function fetchAll(): array;
+    public function all(): array;
 
     /**
-     *
-     * @throws InvalidFleetDataException
+     * @throws UnknownSpacecraftException
      */
-    public function fetchOneBySlug(string $slug): ?SpacecraftData;
+    public function find(string $slug): AbstractSpacecraft;
 }

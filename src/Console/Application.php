@@ -4,74 +4,90 @@ declare(strict_types=1);
 
 namespace Cosmic\Console;
 
-use Cosmic\Exception\CosmicExceptionInterface;
-use Cosmic\Exception\UsageException;
+use Cosmic\Exception\CosmicException;
+use Cosmic\Exception\UnknownPlanetException;
+use Cosmic\Model\Planet;
+use Cosmic\Service\FleetStorageInterface;
+use Cosmic\Service\MissionControl;
 
 final readonly class Application
 {
-    public const int EXIT_OK = 0;
-    public const int EXIT_FAILURE = 1;
-    public const int EXIT_USAGE = 2;
-    private const array HELP_FLAGS = ['help', '--help', '-h'];
-    private array $commands;
-
-    public function __construct(private Output $output, CommandInterface ...$commands)
-    {
-        $indexed = [];
-        foreach ($commands as $command) {
-            $indexed[$command->name()] = $command;
-        }
-
-        $this->commands = $indexed;
+    public function __construct(
+        private FleetStorageInterface $fleetStorage,
+        private MissionControl $missionControl,
+    ) {
     }
 
     /**
      * @param list<string> $argv
      *
-     * @return int
+     * @return int the exit code: 0 for success, 1 for an error
      */
     public function run(array $argv): int
     {
-        $name = $argv[1] ?? null;
-
-        if ($name === null || in_array($name, self::HELP_FLAGS, true)) {
-            $this->printUsage();
-
-            return self::EXIT_OK;
-        }
-
-        $command = $this->commands[$name] ?? null;
-
-        if ($command === null) {
-            $this->output->error(sprintf('Unknown command "%s".', $name));
-            $this->output->error('Run "php bin/cosmic help" to see what is available.');
-
-            return self::EXIT_USAGE;
-        }
         try {
-            return $command->run(array_slice($argv, 2), $this->output);
-        } catch (UsageException $e) {
-            $this->output->error($e->getMessage());
+            match ($argv[1] ?? 'help') {
+                'help' => $this->help(),
+                'fleet' => $this->fleet(),
+                'planets' => $this->planets(),
+                'launch' => $this->launch($argv[2] ?? null, $argv[3] ?? null),
+                default => throw new CosmicException(sprintf('Unknown command "%s". Run "php bin/cosmic help".', $argv[1])),
+            };
 
-            return self::EXIT_USAGE;
-        } catch (CosmicExceptionInterface $e) {
-            $this->output->error($e->getMessage());
+            return 0;
+        } catch (CosmicException $e) {
+            fwrite(STDERR, $e->getMessage().PHP_EOL);
 
-            return self::EXIT_FAILURE;
+            return 1;
         }
     }
 
-    private function printUsage(): void
+    private function help(): void
     {
-        $this->output->line('Cosmic Mission Control');
-        $this->output->line();
-        $this->output->line('Usage:');
-        $this->output->line('  php bin/cosmic <command> [arguments]');
-        $this->output->line();
-        $this->output->line('Commands:');
+        echo 'Cosmic Mission Control'.PHP_EOL;
+        echo PHP_EOL;
+        echo '  php bin/cosmic fleet                          List the spacecraft'.PHP_EOL;
+        echo '  php bin/cosmic planets                        List the destinations'.PHP_EOL;
+        echo '  php bin/cosmic launch <spacecraft> <planet>   Send a spacecraft to a planet'.PHP_EOL;
+    }
 
-        foreach ($this->commands as $command) {
-            $this->output->line(sprintf('  %-30s %s', $command->usage(), $command->description()));
+    private function fleet(): void
+    {
+        foreach ($this->fleetStorage->all() as $spacecraft) {
+            printf(
+                '%-10s %-14s fuel %-4d range %d million km'.PHP_EOL,
+                $spacecraft->slug,
+                $spacecraft->getType(),
+                $spacecraft->fuel,
+                $spacecraft->rangeInMillionKm()
+            );
         }
+    }
+
+    private function planets(): void
+    {
+        foreach (Planet::cases() as $planet) {
+            printf('%-10s %d million km'.PHP_EOL, $planet->value, $planet->distanceInMillionKm());
+        }
+    }
+
+    private function launch(?string $slug, ?string $planetName): void
+    {
+        if ($slug === null || $planetName === null) {
+            throw new CosmicException('Usage: php bin/cosmic launch <spacecraft> <planet>');
+        }
+
+        $spacecraft = $this->fleetStorage->find(strtolower($slug));
+        $planet = Planet::tryFrom(strtolower($planetName)) ?? throw new UnknownPlanetException($planetName);
+
+        $report = $this->missionControl->launch($spacecraft, $planet);
+
+        printf(
+            '%s reached %s. Fuel burned: %d (%d left).'.PHP_EOL,
+            $spacecraft->name,
+            $planet->name,
+            $report->fuelBurned,
+            $spacecraft->fuel
+        );
     }
 }

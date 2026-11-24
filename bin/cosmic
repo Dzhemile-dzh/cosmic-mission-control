@@ -3,10 +3,15 @@
 
 declare(strict_types=1);
 
-use Cosmic\Service\Container;
+use Cosmic\Console\Application;
+use Cosmic\Service\JsonFileFleetStorage;
+use Cosmic\Service\MissionControl;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 
-$container = new Container(fleetFile: dirname(__DIR__).'/resources/fleet.json');
+$application = new Application(
+    new JsonFileFleetStorage(dirname(__DIR__).'/resources/fleet.json'),
+    new MissionControl(),
+);
 
-exit($container->getApplication()->run($argv));
+exit($application->run($argv));

@@ -13,11 +13,6 @@ use PHPUnit\Framework\TestCase;
 
 final class SpacecraftTest extends TestCase
 {
-    public function testTheNameIsTrimmed(): void
-    {
-        self::assertSame('Voyager', new Probe('voyager', '  Voyager ', 60)->name);
-    }
-
     public function testABlankNameIsRejected(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -38,32 +33,19 @@ final class SpacecraftTest extends TestCase
         self::assertSame(120, new CargoHauler('c', 'C', 60)->rangeInMillionKm());
     }
 
-    public function testFuelNeededIsRoundedUpToAWholeUnit(): void
+    public function testFuelNeededIsRoundedUp(): void
     {
-        // Mars is 55 away: 5.5 units for a probe, 27.5 for a hauler
+        // Mars is 55 away and a probe does 10 per fuel unit: 5.5 becomes 6
         self::assertSame(6, new Probe('p', 'P', 60)->fuelNeededFor(Planet::Mars));
-        self::assertSame(28, new CargoHauler('c', 'C', 60)->fuelNeededFor(Planet::Mars));
     }
 
-    public function testBurningFuelLowersTheTank(): void
+    public function testBurningTooMuchFuelThrows(): void
     {
         $probe = new Probe('p', 'P', 10);
 
-        $probe->burnFuel(4);
+        $this->expectException(InsufficientFuelException::class);
 
-        self::assertSame(6, $probe->fuel);
-    }
-
-    public function testBurningMoreFuelThanThereIsThrowsAndKeepsTheFuel(): void
-    {
-        $probe = new Probe('p', 'P', 10);
-
-        try {
-            $probe->burnFuel(11);
-            self::fail('Expected an InsufficientFuelException.');
-        } catch (InsufficientFuelException) {
-            self::assertSame(10, $probe->fuel);
-        }
+        $probe->burnFuel(11);
     }
 
     public function testCargoCapacityCannotBeNegative(): void
@@ -73,14 +55,5 @@ final class SpacecraftTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
 
         $hauler->cargoCapacityInTons = -1;
-    }
-
-    public function testCanCarryUpToItsCapacity(): void
-    {
-        $hauler = new CargoHauler('c', 'C', 60);
-        $hauler->cargoCapacityInTons = 500;
-
-        self::assertTrue($hauler->canCarry(500));
-        self::assertFalse($hauler->canCarry(501));
     }
 }

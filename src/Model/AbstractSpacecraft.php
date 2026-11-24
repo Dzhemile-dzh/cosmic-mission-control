@@ -6,10 +6,8 @@ namespace Cosmic\Model;
 
 use Cosmic\Exception\InsufficientFuelException;
 use InvalidArgumentException;
-use Override;
-use Stringable;
 
-abstract class AbstractSpacecraft implements Stringable
+abstract class AbstractSpacecraft
 {
     public string $name {
         set {
@@ -33,11 +31,6 @@ abstract class AbstractSpacecraft implements Stringable
         }
     }
 
-    /**
-     * @param string $slug
-     * @param string $name
-     * @param int $fuel
-     */
     public function __construct(
         public readonly string $slug,
         string $name,
@@ -56,11 +49,6 @@ abstract class AbstractSpacecraft implements Stringable
         return $this->fuel * $this->millionKmPerFuelUnit();
     }
 
-    public function canReach(Planet $planet): bool
-    {
-        return $this->rangeInMillionKm() >= $planet->distanceInMillionKm();
-    }
-
     public function fuelNeededFor(Planet $planet): int
     {
         return (int) ceil($planet->distanceInMillionKm() / $this->millionKmPerFuelUnit());
@@ -71,20 +59,10 @@ abstract class AbstractSpacecraft implements Stringable
      */
     public function burnFuel(int $amount): void
     {
-        if ($amount < 0) {
-            throw new InvalidArgumentException('Cannot burn a negative amount of fuel.');
-        }
-
         if ($amount > $this->fuel) {
-            throw InsufficientFuelException::forBurn($this->name, $amount, $this->fuel);
+            throw new InsufficientFuelException($this->name, $amount, $this->fuel);
         }
 
         $this->fuel -= $amount;
-    }
-
-    #[Override]
-    public function __toString(): string
-    {
-        return $this->name;
     }
 }

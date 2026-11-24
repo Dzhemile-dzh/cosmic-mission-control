@@ -4,17 +4,10 @@ declare(strict_types=1);
 
 namespace Cosmic\Exception;
 
-use RuntimeException;
-
-final class InsufficientFuelException extends RuntimeException implements CosmicExceptionInterface
+final class InsufficientFuelException extends CosmicException
 {
-    public static function forBurn(string $spacecraftName, int $needed, int $available): self
+    public function __construct(string $spacecraftName, int $needed, int $available)
     {
-        return new self(sprintf(
-            '%s cannot burn %d fuel: only %d left in the tank.',
-            $spacecraftName,
-            $needed,
-            $available
-        ));
+        parent::__construct(sprintf('%s needs %d fuel but only has %d.', $spacecraftName, $needed, $available));
     }
 }

@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Cosmic\Exception;
 
-use InvalidArgumentException;
-
-final class UnknownSpacecraftException extends InvalidArgumentException implements CosmicExceptionInterface
+final class UnknownSpacecraftException extends CosmicException
 {
-    public static function forSlug(string $slug): self
+    public function __construct(string $slug)
     {
-        return new self(sprintf('There is no spacecraft called "%s" in the fleet.', $slug));
+        parent::__construct(sprintf('There is no spacecraft called "%s" in the fleet.', $slug));
     }
 }
