@@ -8,6 +8,8 @@ use Override;
 
 final class CargoHauler extends AbstractSpacecraft
 {
+    use CarriesCargoTrait;
+
     #[Override]
     public function getType(): string
     {
