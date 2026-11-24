@@ -10,9 +10,6 @@ use Cosmic\Console\LaunchCommand;
 use Cosmic\Console\Output;
 use Cosmic\Console\PlanetsCommand;
 
-/**
- * Builds every object once, on first use, and wires them together.
- */
 final class Container
 {
     private ?Output $output = null;

@@ -7,10 +7,6 @@ namespace Cosmic\Exception;
 use RuntimeException;
 use Throwable;
 
-/**
- * The stored fleet data is broken: a problem with the data file, not with
- * what the user typed.
- */
 final class InvalidFleetDataException extends RuntimeException implements CosmicExceptionInterface
 {
     public static function unreadableFile(string $filename): self
@@ -19,7 +15,9 @@ final class InvalidFleetDataException extends RuntimeException implements Cosmic
     }
 
     /**
-     * @param Throwable|null $previous the original JSON error, kept for debugging
+     * @param string $filename
+     * @param Throwable|null $previous
+     * @return InvalidFleetDataException
      */
     public static function malformedFile(string $filename, ?Throwable $previous = null): self
     {

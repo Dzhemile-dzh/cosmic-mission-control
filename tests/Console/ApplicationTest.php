@@ -17,9 +17,6 @@ use Cosmic\Tests\Support\InMemoryFleetStorage;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Runs the whole application against in-memory streams and an in-memory fleet.
- */
 final class ApplicationTest extends TestCase
 {
     /** @var resource */
@@ -32,8 +29,8 @@ final class ApplicationTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->stdout = fopen('php://memory', 'w+');
-        $this->stderr = fopen('php://memory', 'w+');
+        $this->stdout = fopen('php://memory', 'wb+');
+        $this->stderr = fopen('php://memory', 'wb+');
 
         $fleetLoader = new FleetLoader(new InMemoryFleetStorage(
             new SpacecraftData('voyager', 'Voyager', SpacecraftType::Probe, 60),
@@ -81,7 +78,6 @@ final class ApplicationTest extends TestCase
     }
 
     /**
-     * An empty expectation means the stream must be empty.
      *
      * @param resource $stream
      */

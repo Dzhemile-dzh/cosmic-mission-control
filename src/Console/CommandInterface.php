@@ -8,22 +8,14 @@ use Cosmic\Exception\CosmicExceptionInterface;
 
 interface CommandInterface
 {
-    /**
-     * The word the user types to run this command, e.g. "launch".
-     */
     public function name(): string;
-
-    /**
-     * The name plus its arguments, e.g. "launch <spacecraft> <planet>".
-     */
     public function usage(): string;
-
     public function description(): string;
 
     /**
-     * @param list<string> $arguments everything typed after the command name
-     *
-     * @return int the process exit code
+     * @param array $arguments
+     * @param Output $output
+     * @return int
      *
      * @throws CosmicExceptionInterface
      */

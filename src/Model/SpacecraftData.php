@@ -6,9 +6,6 @@ namespace Cosmic\Model;
 
 use Cosmic\Exception\InvalidFleetDataException;
 
-/**
- * One stored spacecraft, exactly as a storage hands it over.
- */
 final readonly class SpacecraftData
 {
     private const array REQUIRED_FIELDS = ['slug', 'name', 'type', 'fuel'];
@@ -23,7 +20,6 @@ final readonly class SpacecraftData
     }
 
     /**
-     * Builds the object from a raw row, casting every value in one place.
      *
      * @param array<string, mixed> $row
      *

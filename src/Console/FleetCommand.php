@@ -36,7 +36,6 @@ final readonly class FleetCommand implements CommandInterface
     #[Override]
     public function run(array $arguments, Output $output): int
     {
-        // load first: if the data is broken, fail before printing anything
         $fleet = $this->fleetLoader->getFleet();
 
         $output->line(sprintf(self::ROW_FORMAT, 'SLUG', 'NAME', 'TYPE', 'FUEL', 'RANGE'));

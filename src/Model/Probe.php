@@ -13,10 +13,6 @@ final class Probe extends AbstractSpacecraft
     {
         return 'Probe';
     }
-
-    /**
-     * Small and unmanned, so it travels far on very little.
-     */
     #[Override]
     public function millionKmPerFuelUnit(): int
     {

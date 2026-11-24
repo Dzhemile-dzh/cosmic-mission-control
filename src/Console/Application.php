@@ -12,12 +12,7 @@ final readonly class Application
     public const int EXIT_OK = 0;
     public const int EXIT_FAILURE = 1;
     public const int EXIT_USAGE = 2;
-
     private const array HELP_FLAGS = ['help', '--help', '-h'];
-
-    /**
-     * @var array<string, CommandInterface> indexed by command name
-     */
     private array $commands;
 
     public function __construct(private Output $output, CommandInterface ...$commands)
@@ -31,10 +26,9 @@ final readonly class Application
     }
 
     /**
-     * @param list<string> $argv the raw arguments, script name first
+     * @param list<string> $argv
      *
-     * @return int the process exit code
-     * @throws CosmicExceptionInterface
+     * @return int
      */
     public function run(array $argv): int
     {
@@ -54,9 +48,6 @@ final readonly class Application
 
             return self::EXIT_USAGE;
         }
-
-        // Only our own exceptions are caught. Anything else is a bug and
-        // should surface with its stack trace.
         try {
             return $command->run(array_slice($argv, 2), $this->output);
         } catch (UsageException $e) {

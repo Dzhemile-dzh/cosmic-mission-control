@@ -17,7 +17,6 @@ interface FleetStorageInterface
     public function fetchAll(): array;
 
     /**
-     * Returns the spacecraft with this slug, or null if there is none.
      *
      * @throws InvalidFleetDataException
      */

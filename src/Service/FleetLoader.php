@@ -13,9 +13,6 @@ use Cosmic\Model\Probe;
 use Cosmic\Model\SpacecraftData;
 use Cosmic\Model\SpacecraftType;
 
-/**
- * Turns stored spacecraft data into real spacecraft objects.
- */
 final readonly class FleetLoader
 {
     public function __construct(private FleetStorageInterface $fleetStorage)

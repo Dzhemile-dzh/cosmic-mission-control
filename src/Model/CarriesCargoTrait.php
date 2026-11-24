@@ -6,10 +6,6 @@ namespace Cosmic\Model;
 
 use InvalidArgumentException;
 
-/**
- * For spacecraft with a cargo hold. Not every spacecraft has one (a probe
- * does not), so this cannot live in AbstractSpacecraft.
- */
 trait CarriesCargoTrait
 {
     public int $cargoCapacityInTons = 0 {

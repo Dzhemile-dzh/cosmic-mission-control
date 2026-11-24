@@ -23,9 +23,6 @@ abstract class AbstractSpacecraft implements Stringable
         }
     }
 
-    /**
-     * Readable by anyone, but only the spacecraft itself changes its fuel.
-     */
     public private(set) int $fuel {
         set {
             if ($value < 0) {
@@ -37,7 +34,9 @@ abstract class AbstractSpacecraft implements Stringable
     }
 
     /**
-     * @param string $slug what the user types on the command line, e.g. "voyager"
+     * @param string $slug
+     * @param string $name
+     * @param int $fuel
      */
     public function __construct(
         public readonly string $slug,
@@ -50,9 +49,6 @@ abstract class AbstractSpacecraft implements Stringable
 
     abstract public function getType(): string;
 
-    /**
-     * How far one unit of fuel carries this kind of spacecraft.
-     */
     abstract public function millionKmPerFuelUnit(): int;
 
     public function rangeInMillionKm(): int
@@ -65,16 +61,13 @@ abstract class AbstractSpacecraft implements Stringable
         return $this->rangeInMillionKm() >= $planet->distanceInMillionKm();
     }
 
-    /**
-     * Fuel comes in whole units, so a partly used unit counts as a full one.
-     */
     public function fuelNeededFor(Planet $planet): int
     {
         return (int) ceil($planet->distanceInMillionKm() / $this->millionKmPerFuelUnit());
     }
 
     /**
-     * @throws InsufficientFuelException when asked to burn more than is in the tank
+     * @throws InsufficientFuelException
      */
     public function burnFuel(int $amount): void
     {

@@ -20,9 +20,6 @@ final readonly class MissionReport
         return new self(MissionStatus::Success, $spacecraft, $destination, $fuelBurned);
     }
 
-    /**
-     * The spacecraft never left, so no fuel was burned.
-     */
     public static function aborted(AbstractSpacecraft $spacecraft, Planet $destination, string $reason): self
     {
         return new self(MissionStatus::Aborted, $spacecraft, $destination, reason: $reason);

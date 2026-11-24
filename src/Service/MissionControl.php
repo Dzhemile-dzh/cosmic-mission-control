@@ -10,11 +10,6 @@ use Cosmic\Model\Planet;
 
 final readonly class MissionControl
 {
-    /**
-     * Sends the spacecraft to the planet, burning the fuel the trip needs.
-     * A destination out of range is an expected outcome, not an error: the
-     * launch is called off and the spacecraft keeps its fuel.
-     */
     public function launch(AbstractSpacecraft $spacecraft, Planet $destination): MissionReport
     {
         if (!$spacecraft->canReach($destination)) {
