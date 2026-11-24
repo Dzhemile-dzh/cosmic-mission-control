@@ -13,6 +13,6 @@ final class UsageException extends InvalidArgumentException implements CosmicExc
 {
     public static function missingArgument(string $argument, string $usage): self
     {
-        return new self(sprintf('Missing argument "%s". Usage: %s', $argument, $usage));
+        return new self(sprintf('Missing argument "%s". Usage: php bin/cosmic %s', $argument, $usage));
     }
 }

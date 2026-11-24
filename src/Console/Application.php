@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Cosmic\Console;
 
+use Cosmic\Exception\CosmicExceptionInterface;
+use Cosmic\Exception\UsageException;
+
 final readonly class Application
 {
     public const int EXIT_OK = 0;
@@ -31,6 +34,7 @@ final readonly class Application
      * @param list<string> $argv the raw arguments, script name first
      *
      * @return int the process exit code
+     * @throws CosmicExceptionInterface
      */
     public function run(array $argv): int
     {
@@ -51,7 +55,19 @@ final readonly class Application
             return self::EXIT_USAGE;
         }
 
-        return $command->run(array_slice($argv, 2), $this->output);
+        // Only our own exceptions are caught. Anything else is a bug and
+        // should surface with its stack trace.
+        try {
+            return $command->run(array_slice($argv, 2), $this->output);
+        } catch (UsageException $e) {
+            $this->output->error($e->getMessage());
+
+            return self::EXIT_USAGE;
+        } catch (CosmicExceptionInterface $e) {
+            $this->output->error($e->getMessage());
+
+            return self::EXIT_FAILURE;
+        }
     }
 
     private function printUsage(): void
